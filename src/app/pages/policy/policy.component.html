@@ -1,0 +1,110 @@
+<div class="top-nav">
+    <a href="#">Help</a>
+    <i class="fas fa-user-circle"></i>
+</div>
+
+<div class="container">
+    <div class="left-section">
+        <div class="back-button" (click)="goBack()">
+            <i class="fa-solid fa-chevron-left"></i>
+            <span>Back</span>
+        </div>
+
+        <!-- Policy Card -->
+        <div class="policy-card" *ngIf="policy">
+            <div class="policy-header">
+                <div>
+                    <p class="policy-title">{{ policy?.planType }}</p>
+                    <h2>{{ policy?.make }} {{ policy?.model }}</h2> 
+                    <div class="policy-info">
+                        <div>
+                            <p class="policy-title">Start date</p>
+                            <p>{{ policy?.startDate | date:'longDate' }}</p>
+                        </div>
+                        <div>
+                            <p class="policy-title">End date</p>
+                            <p>{{ policy?.endDate | date:'longDate' }}</p>
+                        </div>
+                    </div>
+                    <div class="policy-footer">
+                        <p class="policy-line">Policy Holder: {{ policy?.owner }}</p>
+                    </div>
+                </div>
+                <img class="m-1" src="100x100.svg" alt="Motorcycle insurance icon">
+            </div>
+            <div class="button-group">
+                <button><i class="fas fa-pencil-alt"></i> Edit</button> 
+                <button><i class="fas fa-shield-alt"></i> Claims</button> 
+                <button><i class="fas fa-download"></i> Download</button>
+                <button><i class="fas fa-times-circle"></i> Cancel</button> 
+            </div>
+        </div>
+        
+        <!-- Expiry Warning -->
+        <div class="expiry-warning" *ngIf="policy?.endDate">
+            <div class="icon-container">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <p>Your policy <br> <span>expiring on {{ policy?.endDate | date:'longDate' }}</span></p>
+            <button>Renew</button>
+        </div>
+        
+        <!-- Bike Details -->
+        <div class="bike-details" *ngIf="policy">
+            <div class="tabs">
+                <div class="tab" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'">Overview</div>
+                <div class="tab" [class.active]="activeTab === 'coverages'" (click)="activeTab = 'coverages'">Coverages</div>
+            </div>
+
+            <div *ngIf="activeTab === 'overview'">
+                <h3>Bike details</h3>
+                <div>
+                    <div class="detail-item">
+                        <p>Bike number</p>
+                        <p>{{ policy?.vehicleNumber }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <p>Make / Model</p>
+                        <p>{{ policy?.make }} {{ policy?.model }}</p> 
+                    </div>
+                    <div class="detail-item">
+                        <p>Fuel type</p>
+                        <p>{{ policy?.fuelType }}</p> 
+                    </div>
+                    <div class="detail-item">
+                        <p>Registration year</p>
+                        <p>{{ policy?.registrationYear }}</p> 
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coverage Details Tab -->
+            <div *ngIf="activeTab === 'coverages'">
+                <h3>Coverage Details</h3>
+                <ul>
+                    <li *ngFor="let item of policy?.coverage" class="detail-item">{{ item }}</li>
+                </ul>
+            </div>
+        </div>
+    </div> 
+
+    <!-- Right Section -->
+    <div class="right-section">
+        <h2>Buy insurance</h2>
+        <div class="insurance-options">
+            <button>
+                <img src="50x50.svg" alt="Car icon">
+                <span>Car</span>
+            </button>
+            <button>
+                <img src="50x50.svg" alt="Bike icon">
+                <span>Bike</span>
+            </button>
+        </div>
+        <div class="chart-container">
+         
+            <app-multi-line-chart></app-multi-line-chart>  <!-- ✅ Added Multi-Line Chart -->
+          </div>
+          
+    </div>
+</div>
