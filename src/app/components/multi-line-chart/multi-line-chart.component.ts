@@ -6,11 +6,17 @@ import { CommonModule } from '@angular/common';
   selector: 'app-multi-line-chart',
   standalone: true,
   imports: [CommonModule],
-  template: `<div #chart></div>`,
+  template: `
+    <div *ngIf="isDangerous" class="danger-warning">
+      ⚠️ This vehicle has unsafe driving patterns! Please investigate.
+    </div>
+    <div #chart></div>
+  `,
   styleUrls: ['./multi-line-chart.component.css']
 })
 export class MultiLineChartComponent implements AfterViewInit {
   @ViewChild('chart', { static: false }) chartContainer!: ElementRef;
+  isDangerous = false;  // 🚨 Danger flag
 
   ngAfterViewInit() {
     this.loadData();
@@ -20,8 +26,10 @@ export class MultiLineChartComponent implements AfterViewInit {
     try {
       const response = await fetch('../output.json');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
       const jsonData = await response.json();
       if (jsonData && jsonData.data) {
+        this.isDangerous = jsonData.dangerous || false; // 🚨 Check if dangerous
         const formattedData = this.formatData(jsonData.data);
         this.createChart(formattedData);
       } else {
@@ -42,7 +50,7 @@ export class MultiLineChartComponent implements AfterViewInit {
   }
 
   private createChart(data: { date: Date; xAcc: number; yAcc: number; gForce: number }[]) {
-    const width = 600, height = 500, margin = { top: 50, right: 50, bottom: 80, left: 50 };
+    const width = 600, height = 500, margin = { top: 50, right: 50, bottom: 100, left: 60 };
 
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
 
@@ -77,6 +85,20 @@ export class MultiLineChartComponent implements AfterViewInit {
 
     svg.append('g')
       .call(d3.axisLeft(y));
+// 🚨 Create Danger/Safe Status Display
+const statusMessage = this.isDangerous 
+  ? "🚨 Warning: This vehicle has unsafe driving patterns. Please investigate immediately!" 
+  : "✅ This vehicle is operating within safe limits.";
+
+const statusText = svg.append('text')
+  .attr('x', width / 2)
+  .attr('y', -10)
+  .attr('text-anchor', 'middle')
+  .attr('font-size', '16px')
+  .attr('font-weight', 'bold')
+  .attr('fill', this.isDangerous ? 'red' : 'green')
+  .text(statusMessage);
+
 
     Object.keys(colors).forEach(key => {
       svg.append('path')
@@ -85,7 +107,7 @@ export class MultiLineChartComponent implements AfterViewInit {
         .attr('fill', 'none')
         .attr('stroke', colors[key as keyof typeof colors])
         .attr('stroke-width', 2)
-        .attr('stroke-opacity', 0.7)
+        .attr('stroke-opacity', 0.8)
         .attr('d', line(key as keyof typeof colors));
     });
 
@@ -109,9 +131,7 @@ export class MultiLineChartComponent implements AfterViewInit {
         .attr('fill', colors[key as keyof typeof colors])
         .on('mouseover', function (event, d) {
           let tooltipContent = `Date: ${d3.timeFormat('%Y-%m-%d')(d.date)}<br>`;
-          if (!isNaN(d.xAcc)) tooltipContent += `X-acc: ${d.xAcc}<br>`;
-          if (!isNaN(d.yAcc)) tooltipContent += `Y-acc: ${d.yAcc}<br>`;
-          if (!isNaN(d.gForce)) tooltipContent += `G-Force: ${d.gForce}`;
+          tooltipContent += `X-acc: ${d.xAcc}<br>Y-acc: ${d.yAcc}<br>G-Force: ${d.gForce}`;
 
           tooltip.style('display', 'block')
             .html(tooltipContent)
@@ -120,7 +140,7 @@ export class MultiLineChartComponent implements AfterViewInit {
 
           svg.selectAll('path')
             .transition().duration(200)
-            .style('opacity', 0.2);
+            .style('opacity', 0.5);
 
           svg.select(`.line-${key}`)
             .transition().duration(200)
@@ -131,8 +151,50 @@ export class MultiLineChartComponent implements AfterViewInit {
 
           svg.selectAll('path')
             .transition().duration(200)
-            .style('opacity', 1.7);
+            .style('opacity', 0.8);
         });
     });
+    
+
+    // ✅ ADD LEGEND BELOW CHART
+    const legend = svg.append('g')
+      .attr('transform', `translate(0, ${height - margin.bottom + 30})`);
+      // ✅ Create a single toggle switch container centered below the chart
+const toggleContainer = d3.select(this.chartContainer.nativeElement)
+.append('div')
+.style('display', 'flex')
+.style('justify-content', 'center') // Centered
+.style('align-items', 'center')
+.style('gap', '20px')
+.style('margin-top', '15px');
+
+// ✅ Loop through each data key to create checkboxes with colors
+Object.entries(colors).forEach(([key, color]) => {
+const toggleDiv = toggleContainer.append('div')
+  .style('display', 'flex')
+  .style('align-items', 'center')
+  .style('gap', '5px');
+
+// ✅ Create the color-matching checkbox
+const checkbox = toggleDiv.append('input')
+  .attr('type', 'checkbox')
+  .attr('id', `checkbox-${key}`)
+  .style('accent-color', color) // ✅ Checkbox color matches line color
+  .property('checked', true) // Default ON
+  .on('change', function () {
+    const isChecked = this.checked;
+    svg.selectAll(`.line-${key}`).transition().duration(300).style('opacity', isChecked ? 1 : 0);
+    svg.selectAll(`.dot-${key}`).transition().duration(300).style('opacity', isChecked ? 1 : 0);
+  });
+
+// ✅ Add label with the corresponding color
+toggleDiv.append('label')
+  .attr('for', `checkbox-${key}`)
+  .text(key)
+  .style('color', color) // Label matches color
+  .style('font-weight', 'bold');
+});
+
+
   }
 }
