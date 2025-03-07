@@ -22,24 +22,49 @@ export class MultiLineChartComponent implements AfterViewInit {
     this.loadData();
   }
 
+  // private async loadData() {
+  //   try {
+  //     const response = await fetch('../output.json');
+  //     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+  //     const jsonData = await response.json();
+  //     if (jsonData && jsonData.data) {
+  //       this.isDangerous = jsonData.dangerous || false; // 🚨 Check if dangerous
+  //       const formattedData = this.formatData(jsonData.data);
+  //       this.createChart(formattedData);
+  //     } else {
+  //       console.error('Invalid JSON format', jsonData);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error loading JSON file:', error);
+  //   }
+  // }
   private async loadData() {
     try {
-      const response = await fetch('../output.json');
+      const response = await fetch('https://vin-tyn8.onrender.com/get-acceleration-data', {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ vin: "VIN1001" })
+      });
+  
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
+  
       const jsonData = await response.json();
+      
       if (jsonData && jsonData.data) {
-        this.isDangerous = jsonData.dangerous || false; // 🚨 Check if dangerous
         const formattedData = this.formatData(jsonData.data);
         this.createChart(formattedData);
       } else {
         console.error('Invalid JSON format', jsonData);
       }
     } catch (error) {
-      console.error('Error loading JSON file:', error);
+      console.error('Error fetching API data:', error);
     }
   }
-
+  
+  
   private formatData(apiData: any[]) {
     return apiData
       .map(d => {
