@@ -41,11 +41,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
-<<<<<<< HEAD
     "maximumError": "3mb"
-=======
-                    "maximumError": "3mb"
->>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
                 },
                 {
                   "type": "anyComponentStyle",

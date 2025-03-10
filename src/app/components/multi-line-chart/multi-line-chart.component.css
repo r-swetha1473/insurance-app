@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 .button {
   font-size: 1em;
   padding: 10px;
@@ -116,7 +116,6 @@ h1 {
   max-width: 450px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
-=======
 .line {
     fill: none;
     stroke-width: 2;
@@ -142,7 +141,3 @@ h1 {
   input[type="file"] {
     margin-bottom: 10px;
   }
-  
-
-   
->>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
