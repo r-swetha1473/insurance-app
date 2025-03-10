@@ -103,8 +103,22 @@
         </div>
         <div class="chart-container">
          
+<<<<<<< HEAD
             <app-multi-line-chart></app-multi-line-chart>  <!-- ✅ Added Multi-Line Chart -->
           </div>
           
     </div>
+=======
+          </div>
+          
+    </div>
+  <!-- Dynamically display the correct chart based on vehicle input -->
+  <div *ngIf="isDanger(vehicleNumber); else safeChart">
+    <app-multi-line-chart></app-multi-line-chart> <!-- 🚨 Danger case -->
+  </div>
+
+  <ng-template #safeChart>
+    <app-line-chart></app-line-chart> <!-- ✅ Safe case -->
+  </ng-template>
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
 </div>

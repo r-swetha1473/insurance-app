@@ -23,6 +23,10 @@
     "d3": "^7.9.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+<<<<<<< HEAD
+=======
+    "xlsx": "^0.18.5",
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

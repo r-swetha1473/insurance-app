@@ -7,21 +7,38 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
+<<<<<<< HEAD
     <div *ngIf="isDangerous" class="danger-warning">
       ⚠️ This vehicle has unsafe driving patterns! Please investigate.
     </div>
     <div #chart></div>
+=======
+    <div *ngIf="isDangerous" class="danger-warning" style="text-align: center; font-size: 18px; font-weight: bold; color: red;">
+      🚨 Warning: High G-Force detected! Unsafe driving patterns found.
+    </div>
+    <div *ngIf="!isDangerous" style="text-align: center; font-size: 18px; font-weight: bold; color: green;">
+      ✅ This vehicle is operating within safe limits.
+    </div>
+    <div #chart></div>
+    <div id="toggle-container" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;"></div>
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
   `,
   styleUrls: ['./multi-line-chart.component.css']
 })
 export class MultiLineChartComponent implements AfterViewInit {
   @ViewChild('chart', { static: false }) chartContainer!: ElementRef;
+<<<<<<< HEAD
   isDangerous = false;  // 🚨 Danger flag
+=======
+  isDangerous = false;
+  private dangerThreshold = 1.5;
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
 
   ngAfterViewInit() {
     this.loadData();
   }
 
+<<<<<<< HEAD
   // private async loadData() {
   //   try {
   //     const response = await fetch('../output.json');
@@ -39,10 +56,13 @@ export class MultiLineChartComponent implements AfterViewInit {
   //     console.error('Error loading JSON file:', error);
   //   }
   // }
+=======
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
   private async loadData() {
     try {
       const response = await fetch('https://vin-tyn8.onrender.com/get-acceleration-data', {
         method: 'POST', 
+<<<<<<< HEAD
         headers: {
           'Content-Type': 'application/json'
         },
@@ -51,10 +71,22 @@ export class MultiLineChartComponent implements AfterViewInit {
   
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
   
+=======
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vin: "VIN1001" })
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
       const jsonData = await response.json();
       
       if (jsonData && jsonData.data) {
         const formattedData = this.formatData(jsonData.data);
+<<<<<<< HEAD
+=======
+        this.isDangerous = formattedData.some(d => d.gForce >= this.dangerThreshold);
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
         this.createChart(formattedData);
       } else {
         console.error('Invalid JSON format', jsonData);
@@ -63,8 +95,12 @@ export class MultiLineChartComponent implements AfterViewInit {
       console.error('Error fetching API data:', error);
     }
   }
+<<<<<<< HEAD
   
   
+=======
+
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
   private formatData(apiData: any[]) {
     return apiData
       .map(d => {
@@ -75,6 +111,7 @@ export class MultiLineChartComponent implements AfterViewInit {
   }
 
   private createChart(data: { date: Date; xAcc: number; yAcc: number; gForce: number }[]) {
+<<<<<<< HEAD
     const width = 600, height = 500, margin = { top: 50, right: 50, bottom: 100, left: 60 };
 
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
@@ -86,6 +123,12 @@ export class MultiLineChartComponent implements AfterViewInit {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
+=======
+    const width = 800, height = 500, margin = { top: 50, right: 50, bottom: 100, left: 60 };
+
+    d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
+
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
     const x = d3.scaleTime()
       .domain(d3.extent(data, d => d.date) as [Date, Date])
       .range([0, width - margin.left - margin.right]);
@@ -97,6 +140,7 @@ export class MultiLineChartComponent implements AfterViewInit {
       ])
       .range([height - margin.top - margin.bottom, 0]);
 
+<<<<<<< HEAD
     const colors = { xAcc: '#007bff', yAcc: '#ff4d4d', gForce: '#28a745' };
 
     const line = (key: keyof typeof colors) => d3.line<{ date: Date; xAcc: number; yAcc: number; gForce: number }>()
@@ -221,5 +265,73 @@ toggleDiv.append('label')
 });
 
 
+=======
+    const colors = { xAcc: '#007bff', yAcc: '#ff4d4d', gForce: 'url(#gradient-gForce)' };
+
+    const svg = d3.select(this.chartContainer.nativeElement)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    svg.append('g')
+      .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
+      .call(d3.axisBottom(x).tickFormat((d) => d instanceof Date ? d3.timeFormat('%b %d')(d) : ''))
+
+
+    svg.append('g').call(d3.axisLeft(y));
+
+    const defs = svg.append("defs");
+    const gradient = defs.append("linearGradient")
+      .attr("id", "gradient-gForce")
+      .attr("x1", "0%").attr("x2", "0%") // Vertical gradient
+      .attr("y1", "100%").attr("y2", "0%");
+    
+    gradient.append("stop").attr("offset", "0%").attr("stop-color", "green");
+    gradient.append("stop").attr("offset", "50%").attr("stop-color", "yellow");
+    gradient.append("stop").attr("offset", "100%").attr("stop-color", "red");
+    
+
+    const linePaths: any = {};
+
+    Object.entries(colors).forEach(([key, color]) => {
+      linePaths[key] = svg.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', color)
+        .attr('stroke-width', 2)
+        .attr('stroke-opacity', 0.8)
+        .attr('d', d3.line<{ date: Date; xAcc: number; yAcc: number; gForce: number }>()
+          .x(d => x(d.date))
+          .y(d => y(d[key as keyof typeof d]))
+          .curve(d3.curveMonotoneX)
+        );
+    });
+
+    const toggleContainer = d3.select("#toggle-container");
+    Object.entries(colors).forEach(([key, color]) => {
+      const toggleDiv = toggleContainer.append('div')
+        .style('display', 'flex')
+        .style('align-items', 'center')
+        .style('gap', '5px');
+
+      const checkbox = toggleDiv.append('input')
+        .attr('type', 'checkbox')
+        .attr('id', `checkbox-${key}`)
+        .style('accent-color', key === 'gForce' ? 'red' : color)
+        .property('checked', true)
+        .on('change', function () {
+          const isChecked = (this as HTMLInputElement).checked;
+          linePaths[key].transition().duration(300).style('opacity', isChecked ? 1 : 0);
+        });
+
+      toggleDiv.append('label')
+        .attr('for', `checkbox-${key}`)
+        .text(key)
+        .style('color', color)
+        .style('font-weight', 'bold');
+    });
+>>>>>>> 839b472 (Fixed isDanger function in PolicyComponent & improved validation)
   }
 }
