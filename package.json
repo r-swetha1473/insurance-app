@@ -15244,5 +15244,21 @@
       "integrity": "sha512-9oxn0IIjbCZkJ67L+LkhYWRyAy7axphb3VgE2MBDlOqnmHMPWGYMxJxBYFueFq/JGY2GMwS0rU+UCLunEmy5UA==",
       "license": "MIT"
     }
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.2.1",
+    "@angular/cli": "^19.2.1",
+    "@types/d3": "^7.4.3"
+  },
+  "dependencies": {
+    "@angular/common": "^19.2.1",
+    "@angular/compiler": "^19.2.1",
+    "@angular/core": "^19.2.1",
+    "@angular/forms": "^19.2.1",
+    "@angular/platform-browser": "^19.2.1",
+    "@angular/platform-browser-dynamic": "^19.2.1",
+    "@angular/router": "^19.2.1",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "d3": "^7.9.0"
   }
 }
